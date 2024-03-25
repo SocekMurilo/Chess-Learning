@@ -1,0 +1,1 @@
+tranformar em label encoder cada jogada por linha e depois tentar printar
