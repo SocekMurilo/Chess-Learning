@@ -1,1 +1,8 @@
-tranformar em label encoder cada jogada por linha e depois tentar printar
+# df['e4'] = 0
+# for index in df.index:
+#     if 'e4' in df.loc[index, 'moves']:
+#         df.loc[index, 'e4'] = 1
+#     else:
+#         df.loc[index, 'e4'] = 0
+
+ipynb
