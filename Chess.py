@@ -21,13 +21,18 @@ df.drop(
     inplace = True
 )
 le = LabelEncoder()
-
+print("Comecou")
 moves = df["moves"].str.split()
 moves = moves.T
 lenthMoves = len(moves)
 for sublist in moves:
     for item in sublist:
-        df[item] = le.fit_transform(df[item])
+        if item in df.columns:
+            df.loc[len(df)] = df[item]
+        else:
+            df[item] = item
+
+        # df[item] = le.fit_transform(df[item])
 print(moves)
 print(df.columns)
 print (df)
