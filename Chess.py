@@ -36,14 +36,24 @@ df['moves'] = df["moves"].str.split()
 moves = df['moves']
 i = 0
 
+
 for sublist in moves:
-    moves = sublist[0: 10: ]
+    moves = sublist[0: 10: 2]
     for item in sublist:
         if item in df.loc[i, 'moves']:
-            df.loc[i, item] = (int)(1)
-    i += 1
+            df.loc[i, item] = 1
+    i += 2
+    if i > 20056:
+        break
+
+
+rows = df.shape[0] 
+cols = df.shape[1] 
+print("Rows: " + str(rows)) 
+print("Columns: " + str(cols)) 
 
 df = df.fillna((int)(0))
+
 
 df.drop(
     [ 'moves'],
@@ -67,10 +77,12 @@ X = normalize(X)
 
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.30, random_state=42)
 
-model = MiniBatchKMeans(n_clusters=10,
+model = MiniBatchKMeans(n_clusters=6,
                         random_state=0,
                         batch_size=6,
                         n_init="auto" )
+
+
 
 model.fit(X_train, Y_train)
 
@@ -82,7 +94,7 @@ print(mean_absolute_error(Y_test, model.predict(X_test)))
 print("-----------------------------------------------")
 
 
-Ypred = model.fit_predict(X)
-df.plot.scatter(x = Y, s = 3)
-df.plot.scatter(x = Ypred, s = 3)
+# Ypred = model.fit_predict(X)
+df['cluster'] = model.predict(X)
+df.plot.scatter(x='cluster', y='white_rating')
 df.show()
