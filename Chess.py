@@ -70,7 +70,7 @@ X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.30, random
 model = MiniBatchKMeans(n_clusters=10,
                         random_state=0,
                         batch_size=6,
-                        n_init="auto", )
+                        n_init="auto" )
 
 model.fit(X_train, Y_train)
 
@@ -83,6 +83,6 @@ print("-----------------------------------------------")
 
 
 Ypred = model.fit_predict(X)
-plt.plot(Y)
-plt.plot(Ypred)
-plt.show()
+df.plot.scatter(x = Y, s = 3)
+df.plot.scatter(x = Ypred, s = 3)
+df.show()
