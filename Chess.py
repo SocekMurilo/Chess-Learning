@@ -1,16 +1,3 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-from joblib import dump
-from xgboost import XGBRegressor
-from sklearn.cluster import MiniBatchKMeans
-
-
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import normalize
-from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-
 df = pd.read_csv('DataSet\\games.csv')
 
 df.columns = df.columns.str.strip()
@@ -60,41 +47,37 @@ df.drop(
     axis = 1,
     inplace = True
 )
-print(df)
-print(df["e4"])
 #######################################################################################
 
 df['victory_status'] = le.fit_transform(df['victory_status'])
 df['winner'] = le.fit_transform(df['winner'])
 df['increment_code'] = le.fit_transform(df['increment_code'])
-# df['moves'] = le.fit_transform(df['moves'])
 df['opening_eco'] = le.fit_transform(df['opening_eco'])
 df['opening_name'] = le.fit_transform(df['opening_name'])
 
 Y = df['winner']
-X = df.drop(['winner'], axis = 1)
-X = normalize(X)
-
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.30, random_state=42)
+X = df.drop(['white_rating', 'white_rating'], axis = 1)
 
 model = MiniBatchKMeans(n_clusters=6,
-                        random_state=0,
-                        batch_size=6,
+                        random_state=5464,
+                        batch_size=20,
                         n_init="auto" )
+model.fit(X)
+dump(model, 'chess.pkl')
 
+preds = model.predict(X)
+for index in df.index:
+    df.loc[index, "cluster"] = preds[index]
 
+print(df['cluster'])
+centroids = model.cluster_centers_
+cen_x = [i[0] for i in centroids] 
+cen_y = [i[1] for i in centroids]
 
-model.fit(X_train, Y_train)
+df['cen_x'] = df.cluster.map({0:cen_x[0], 1:cen_x[1], 2:cen_x[2], 3:cen_x[3], 4:cen_x[4], 5:cen_x[5]})
+df['cen_y'] = df.cluster.map({0:cen_y[0], 1:cen_y[1], 2:cen_y[2], 3:cen_y[3], 4:cen_y[4], 5:cen_y[5]})
 
-dump(model, 'chess.csv')
+colors = ['#DF2020', '#81DF20', '#2095DF', '#677DB7', '#191308', '#21FA90']
+df['c'] = df.cluster.map({0:colors[0], 1:colors[1], 2:colors[2], 3:colors[3], 4:colors[4], 5:colors[5]})
 
-print("-----------------------------------------------")
-print(mean_absolute_error(Y_train, model.predict(X_train)))
-print(mean_absolute_error(Y_test, model.predict(X_test)))
-print("-----------------------------------------------")
-
-
-# Ypred = model.fit_predict(X)
-df['cluster'] = model.predict(X)
-df.plot.scatter(x='cluster', y='white_rating')
-df.show()
+plt.scatter(df['cluster'], df['winner'], alpha = 0.6, s=10, cmap='viridis')
