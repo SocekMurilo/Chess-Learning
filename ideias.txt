@@ -6,3 +6,5 @@
 #         df.loc[index, 'e4'] = 0
 
 ipynb
+
+usar servidor para outra coisa, apenas para mostrar que sabe fazer servidot
